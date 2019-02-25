@@ -20,7 +20,8 @@ app.post('/api/v1/users', (req, res) => {
   if ( !email || !password ) return res.status(422).json('Please provide an email and password');
   const user = app.locals.users.find(user => user.email === email);
   if (!user) return res.status(404).json('User not found');
-  return res.status(201).json(user);
+  if (password !== user.password) return res.status(422).json('Password is incorrect');
+  return res.status(200).json(user);
 });
 
 app.post('/api/v1/users/new', (req, res) => {
