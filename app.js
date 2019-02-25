@@ -36,7 +36,7 @@ app.post('/api/v1/users/new', (req, res) => {
     password
   };
   app.locals.users.push(newUser);
-  app.locals.city.push({ user_id: newUser.id, city: ''});
+  app.locals.cities.push({ user_id: newUser.id, city: ''});
   return res.status(201).json(newUser);
 });
 

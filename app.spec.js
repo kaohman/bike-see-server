@@ -119,4 +119,35 @@ describe('api', () => {
       expect(response.body).toBe('Favorite not found');
     });
   });
+
+  describe('get /api/v1/users/:id/city', () => {
+    it('should return a 200 and a city object', async () => {
+      const response = await request(app).get('/api/v1/users/1/city');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ user_id: '1', city: 'Denver' });
+    });
+  });
+
+  describe('put /api/v1/users/:id/city', () => {
+    it('should return a 200 and a city object', async () => {
+      const newCity = { user_id: '1', city: 'boulder' };
+      const response = await request(app).put('/api/v1/users/1/city').send(newCity);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(newCity);
+    });
+
+    it('should return a 422 and message if missing info', async () => {
+      const newCity = { user_id: '1' };
+      const response = await request(app).put('/api/v1/users/1/city').send(newCity);
+      expect(response.status).toBe(422);
+      expect(response.body).toEqual('Please provide a city to update');
+    });
+
+    it('should return a 404 and message if it cannot find the user', async () => {
+      const newCity = { user_id: '5', city: 'boulder' };
+      const response = await request(app).put('/api/v1/users/5/city').send(newCity);
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual('User city not found');
+    });
+  });
 });
