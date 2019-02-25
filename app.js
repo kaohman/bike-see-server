@@ -6,6 +6,7 @@ app.use(express.json());
 import shortid from 'shortid';
 
 app.locals.users = [];
+app.locals.cities = [];
 app.locals.favorites = [];
 
 app.get('/api/v1/users', (req, res) => {
@@ -33,9 +34,9 @@ app.post('/api/v1/users/new', (req, res) => {
   return res.status(201).json(newUser);
 });
 
-app.post('/api/v1/users/favorites/new', (res, req) => {
+app.post('/api/v1/users/favorites/new', (req, res) => {
   const { user_id, station_id } = req.body;
-  if (!user_id || !favorite_id) return res.status(422).json('Please provide a user id and station id');
+  if (!user_id || !station_id) return res.status(422).json('Please provide a user id and station id');
   const newFavorite = {
     user_id,
     station_id
@@ -44,17 +45,29 @@ app.post('/api/v1/users/favorites/new', (res, req) => {
   return res.status(201).json(newFavorite);
 });
 
-app.get('/api/v1/users/:id/favorites', (res, req) => {
+app.get('/api/v1/users/:id/favorites', (req, res) => {
   const favorites = app.locals.favorites.filter(favorite => favorite.user_id == req.params.id);
-  if (!favorites) return res.status(404).json('No favorites found');
   return res.status(200).json(favorites);
 });
 
-app.delete('/api/v1/users/:id/favorites/:station_id', (res, req) => {
+app.delete('/api/v1/users/:id/favorites/:station_id', (req, res) => {
   const { id, station_id } = req.params;
-  const favorite = app.locals.favorites.find(favorite => favorite.user_id === id && favorite.station_id === station_id);
-  if (!favorite) return res.status(404).json('Favorite could not be deleted');
+  const index = app.locals.favorites.findIndex(favorite => favorite.user_id === id && favorite.station_id === station_id);
+  if (index === -1) return res.status(404).json('Favorite not found')
+  app.locals.favorites.splice(index, 1)
   return res.sendStatus(204);
+});
+
+app.post('/api/v1/users/city/new', (req, res) => {
+  // adds a new user city, this is called when new user is created and sets city to empty string
+});
+
+app.get('/api/v1/users/:id/city', (req, res) => {
+  // gets the users current city, this is called in fetchUser when user logins in
+});
+
+app.put('/api/v1/users/:id/city', (req, res) => {
+  // updates the users current city, this is called anytime the user changes their current city
 });
 
 export default app;
