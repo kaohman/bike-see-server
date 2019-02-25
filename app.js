@@ -8,7 +8,9 @@ import shortid from 'shortid';
 app.locals.users = [
   { id: '1', name: 'Karin', email: 'k@k', password: 'k' }
 ];
-app.locals.cities = [];
+app.locals.cities = [
+  { user_id: '1', city: 'denver' }
+];
 app.locals.favorites = [];
 
 app.get('/api/v1/users', (req, res) => {
@@ -34,6 +36,7 @@ app.post('/api/v1/users/new', (req, res) => {
     password
   };
   app.locals.users.push(newUser);
+  app.locals.city.push({ user_id: newUser.id, city: ''});
   return res.status(201).json(newUser);
 });
 
@@ -61,16 +64,23 @@ app.delete('/api/v1/users/:id/favorites/:station_id', (req, res) => {
   return res.sendStatus(204);
 });
 
-app.post('/api/v1/users/city/new', (req, res) => {
-  // adds a new user city, this is called when new user is created and sets city to empty string
-});
-
 app.get('/api/v1/users/:id/city', (req, res) => {
   // gets the users current city, this is called in fetchUser when user logins in
+  const city = app.locals.cities.find(user => user.user_id === req.params.id);
+  return res.status(200).json(city);
 });
 
 app.put('/api/v1/users/:id/city', (req, res) => {
   // updates the users current city, this is called anytime the user changes their current city
+  if (!req.body.city) return res.status(422).json('Please provide a city to update');
+  const index = app.locals.cities.findIndex(user => user.user_id === req.params.id);
+  if (index === -1) return res.status(404).json('User city not found');
+  const newCity = {
+    user_id: req.params.id,
+    city: req.body.city,
+  }
+  app.locals.cities.splice(index, 1, newCity);
+  return res.status(200).json(newCity);
 });
 
 export default app;
