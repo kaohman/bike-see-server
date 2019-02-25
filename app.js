@@ -65,20 +65,18 @@ app.delete('/api/v1/users/:id/favorites/:station_id', (req, res) => {
 });
 
 app.get('/api/v1/users/:id/city', (req, res) => {
-  // gets the users current city, this is called in fetchUser when user logins in
   const city = app.locals.cities.find(user => user.user_id === req.params.id);
   return res.status(200).json(city);
 });
 
 app.put('/api/v1/users/:id/city', (req, res) => {
-  // updates the users current city, this is called anytime the user changes their current city
   if (!req.body.city) return res.status(422).json('Please provide a city to update');
   const index = app.locals.cities.findIndex(user => user.user_id === req.params.id);
   if (index === -1) return res.status(404).json('User city not found');
   const newCity = {
     user_id: req.params.id,
-    city: req.body.city,
-  }
+    city: req.body.city
+  };
   app.locals.cities.splice(index, 1, newCity);
   return res.status(200).json(newCity);
 });
