@@ -5,7 +5,9 @@ app.use(cors());
 app.use(express.json());
 import shortid from 'shortid';
 
-app.locals.users = [];
+app.locals.users = [
+  { id: '1', name: 'Karin', email: 'k@k', password: 'k' }
+];
 app.locals.cities = [];
 app.locals.favorites = [];
 
