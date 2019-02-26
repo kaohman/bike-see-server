@@ -29,6 +29,8 @@ app.post('/api/v1/users', (req, res) => {
 app.post('/api/v1/users/new', (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) return res.status(422).json('Please provide a name, email and password');
+  const existingUser = app.locals.users.find(user => user.email === email);
+  if (existingUser) return res.status(422).json('User already exists');
   const newUser = {
     id: shortid.generate(),
     name,

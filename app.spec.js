@@ -77,6 +77,14 @@ describe('api', () => {
       expect(response.status).toBe(422);
       expect(response.body).toBe('Please provide a name, email and password');
     });
+
+
+    it('should return a status of 422 and message if a name an email or password is not provided', async () => {
+      const newUser = { name: 'Kar', email: 'k@k', password: 'pass'};
+      const response = await request(app).post('/api/v1/users/new').send(newUser);
+      expect(response.status).toBe(422);
+      expect(response.body).toBe('User already exists');
+    });
   });
 
   describe('post /api/v1/users/favorites/new', () => {
