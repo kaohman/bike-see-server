@@ -5,6 +5,9 @@ app.use(cors());
 app.use(express.json());
 import shortid from 'shortid';
 
+// const users = client.db('bike-see').collection('users');
+// const favorites = client.db('bike-see').collection('favorites');
+
 app.locals.users = [
   { id: '1', name: 'Karin', email: 'k@k', password: 'k' }
 ];
