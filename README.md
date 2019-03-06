@@ -1,8 +1,9 @@
 # bikeSee (backend)
-API endpoints for bikeSee app
+Server and Postgres database for BikeSee app.
 
 ### Set-Up Back-End
 Clone back-end repo: ```git clone https://github.com/kaohman/bike-see-server.git```
+If you don't have PostgreSQl, follow the steps to setup PostgreSQL [HERE](https://postgresapp.com/)
 Run ```npm install``` from root directory
 Run ```npm start```
 
