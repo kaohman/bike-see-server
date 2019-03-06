@@ -2,19 +2,19 @@
 Server and Postgres database for BikeSee app.
 
 ### Set-Up Back-End
-Clone back-end repo: ```git clone https://github.com/kaohman/bike-see-server.git```
-If you don't have PostgreSQl, follow the steps to setup PostgreSQL [HERE](https://postgresapp.com/)
-Run ```npm install``` from root directory
-Run ```npm start```
+- Clone back-end repo: ```git clone https://github.com/kaohman/bike-see-server.git```
+- If you don't have PostgreSQl, follow the steps to setup PostgreSQL [HERE](https://postgresapp.com/)
+- Run ```npm install``` from root directory
+- Run ```npm start```
 
 ### Set-Up Front-End
-Clone this repo: ```git clone https://github.com/kaohman/bike-see.git```
-Run ```npm install``` from root directory
-Run ```npm start``` and visit localhost:3000 in your browser
+- Clone this repo: ```git clone https://github.com/kaohman/bike-see.git```
+- Run ```npm install``` from root directory
+- Run ```npm start``` and visit localhost:3000 in your browser
 
 ### Testing:
-Jest and Supertest 
-Run `npm test` from the root directory
+- Jest and Supertest 
+- Run `npm test` from the root directory
 
 ### API Endpoints
 
