@@ -23,8 +23,6 @@ Run `npm test` from the root directory
 - POST `ap1/v1/users/favorites/new` - add new favorite for user
 - GET `ap1/v1/users/:id/favorites` - get all user's favorites
 - DELETE `ap1/v1/users/:id/favorites/:station_id` - delete a user's favorite
-- GET `ap1/v1/users/:id/city` - get user's current city
-- PUT `ap1/v1/users/:id/city` - update a user's current city
 
 ### Contributors:  
 - [Karin Ohman](https://github.com/kaohman)
