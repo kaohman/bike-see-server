@@ -1,6 +1,6 @@
-import express from 'express';
+var express = require('express');
 const app = express();
-import cors from 'cors';
+var cors = require('cors');
 app.use(cors());
 app.use(express.json());
 const environment = process.env.NODE_ENV || 'development';
@@ -54,4 +54,4 @@ app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   return res.sendStatus(204);
 });
 
-export default app;
+module.exports = app;
