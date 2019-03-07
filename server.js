@@ -1,3 +1,7 @@
+require('babel-register')({
+  "presets": ["es2015"]
+});
+
 import app from './app';
 app.set('port', process.env.PORT || 3001);
 
