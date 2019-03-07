@@ -4,11 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --watch",
-    "clean": "rm -rf build && mkdir build",
-    "build-babel": "babel -d ./build ./src -s",
-    "build": "npm run clean && npm run build-babel",
-    "start": "npm run build && node ./build/server.js"
+    "start": "nodemon --exec babel-node server.js",
+    "test": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +14,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "knex": "^0.16.3",
-    "pg": "^7.8.1",
-    "shortid": "^2.2.14"
+    "pg": "^7.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",

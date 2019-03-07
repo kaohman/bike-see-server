@@ -54,4 +54,4 @@ app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   return res.sendStatus(204);
 });
 
-export default app;
+module.exports(app);
