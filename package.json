@@ -4,8 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon --exec babel-node server.js",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "clean": "rm -rf build && mkdir build",
+    "build-babel": "babel -d ./build ./src -s",
+    "build": "npm run clean && npm run build-babel",
+    "start": "npm run build && node ./build/server.js"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +25,8 @@
     "@babel/node": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
+    "babel-cli": "^6.26.0",
     "babel-jest": "^24.1.0",
-    "babel-register": "^6.26.0",
     "supertest": "^3.4.2"
   }
 }
