@@ -19,7 +19,15 @@ app.post('/api/v1/users', async (req, res) => {
   const user = users.find(user => user.email === email);
   if (!user) return res.status(404).json('User not found');
   if (password !== user.password) return res.status(422).json('Password is incorrect');
-  return res.status(200).json(user);
+  return res.status(200).json({ name: user.name, id: user.id });
+});
+
+app.get('/api/v1/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const users = await database('users').select();
+  const user = users.find(user => user.id === parseInt(id));
+  if (!user) return res.status(404).json('User not found');
+  return res.status(200).json({ name: user.name, id: user.id });
 });
 
 app.post('/api/v1/users/new', async (req, res) => {
@@ -29,7 +37,7 @@ app.post('/api/v1/users/new', async (req, res) => {
   const existingUser = users.find(user => user.email === email);
   if (existingUser) return res.status(422).json('User already exists');
   const newUser = await database('users').insert({ name, email, password }, 'id')
-  return res.status(201).json({ name, email, password });
+  return res.status(201).json({ name, id: newUser.id });
 });
 
 app.post('/api/v1/users/favorites/new', async (req, res) => {
