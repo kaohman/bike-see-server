@@ -37,7 +37,7 @@ app.post('/api/v1/users/new', async (req, res) => {
   const existingUser = users.find(user => user.email === email);
   if (existingUser) return res.status(422).json('User already exists');
   const newUser = await database('users').insert({ name, email, password }, 'id')
-  return res.status(201).json({ name, id: newUser.id });
+  return res.status(201).json({ name, id: newUser[0] });
 });
 
 app.post('/api/v1/users/favorites/new', async (req, res) => {
