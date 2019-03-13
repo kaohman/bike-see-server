@@ -25,8 +25,8 @@ app.post('/api/v1/users', async (req, res) => {
   try {
     const user = await database('users').select().where('email', email);
     if (user.length === 0) return res.status(404).json(`User email ${email} not found`);
-    if (password !== user.password) return res.status(422).json(`User password ${password} is incorrect`)
-    return res.status(200).json({ name: user.name, id: user.id })
+    if (password !== user[0].password) return res.status(422).json(`User password is incorrect`)
+    return res.status(200).json({ name: user[0].name, id: user[0].id })
   } catch (error) {
     return res.status(500).json({ error })
   }
@@ -37,7 +37,7 @@ app.get('/api/v1/users/:id', async (req, res) => {
   try {
     const user = await database('users').select().where('id', parseInt(id));
     if (user.length == 0) return res.status(404).json(`User id ${id} not found`)
-    return res.status(200).json({ name: user.name, id: user.id })
+    return res.status(200).json({ name: user[0].name, id: user[0].id })
   } catch (error) {
     return res.status(500).json({ error })
   }
@@ -50,7 +50,7 @@ app.post('/api/v1/users/new', async (req, res) => {
   }
   
   try {
-    const dupUser = await database('states').select().where('email', email);
+    const dupUser = await database('users').select().where('email', email);
     if (dupUser.length > 0) return res.status(409).json(`Conflict. User with email ${email} already exists`)
     const newUserId = await database('users').insert({ name, email, password }, 'id')
     return res.status(201).json({ name, id: newUserId[0] })
@@ -66,7 +66,7 @@ app.post('/api/v1/users/favorites', async (req, res) => {
   }
 
   try {
-    const dupFavorite = await database('favorites').select().where({ user_id, station_id });
+    const dupFavorite = await database('favorites').select().where({ user_id: parseInt(user_id), station_id: parseInt(station_id) });
     if (dupFavorite.length > 0) return res.status(409).json(`Conflict. User favorite station id ${station_id} already exists`)
     const newFavoriteId = await database('favorites').insert({ user_id, station_id }, 'id');
     return res.status(201).json({id: newFavoriteId[0]});
@@ -79,9 +79,9 @@ app.post('/api/v1/users/favorites', async (req, res) => {
 app.get('/api/v1/users/:id/favorites', async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await database('user').select().where('id', id);
+    const user = await database('users').select().where('id', parseInt(id));
     if (user.length === 0) return res.status(404).json(`User id ${id} not found`)
-    const favorites = await database('favorites').select().where('user_id', id);
+    const favorites = await database('favorites').select().where('user_id', parseInt(id));
     return res.status(200).json(favorites)
   } catch (error) {
     return res.status(500).json({ error })
@@ -91,9 +91,9 @@ app.get('/api/v1/users/:id/favorites', async (req, res) => {
 app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   const { id, station_id } = req.params;
   try {
-    const matchingFavorite = database('favorites').select().where({ user_id: id, station_id });
+    const matchingFavorite = await database('favorites').select().where({ user_id: parseInt(id), station_id: parseInt(station_id) });
     if (matchingFavorite.length === 0) return res.status(404).json(`Favorite user id ${id} and station id ${station_id} not found`)
-    await database('favorites').where(id, matchingFavorite.id).del();
+    await database('favorites').where('id', matchingFavorite[0].id).del();
     return res.sendStatus(204);
   } catch (error) {
     return res.status(500).json({ error })
