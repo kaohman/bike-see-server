@@ -1,10 +1,9 @@
-// Update with your config settings.
 
 module.exports = {
 
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/bikesee',
+    connection: 'postgres://localhost/bike_stations',
     migrations: {
       directory: './db/migrations'
     },

@@ -1,27 +1,25 @@
 
-exports.up = (knex, Promise) => {
+exports.up = function(knex, Promise) {
   return Promise.all([
-    knex.schema.table('users', (user) => {
+    knex.schema.createTable('users', (user) => {
       user.increments('id').primary();
       user.string('name');
       user.string('email');
       user.string('password');
-
-      user.timestamps(true, true)
+      user.timestamps(true, true);
     }),
 
-    knex.schema.table('favorites', (favorite) => {
+    knex.schema.createTable('favorites', (favorite) => {
       favorite.increments('id').primary();
       favorite.integer('user_id').unsigned();
-      favorite.foreign('user_id').references('user.id');
+      favorite.foreign('user_id').references('users.id');
       favorite.string('station_id');
-
-      favorite.timestamps(true, true)
+      favorite.timestamps(true, true);
     })
   ]);
 };
 
-exports.down = (knex, Promise) => {
+exports.down = function(knex, Promise) {
   return Promise.all([
     knex.schema.dropTable('favorites'),
     knex.schema.dropTable('users')
