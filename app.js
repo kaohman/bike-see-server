@@ -8,58 +8,96 @@ const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
 app.get('/api/v1/users', async (req, res) => {
-  const users = await database('users').select()
-  res.status(200).json(users);
+  try {
+    const users = await database('users').select()
+    res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
 app.post('/api/v1/users', async (req, res) => {
   const { email, password } = req.body;
-  if ( !email || !password ) return res.status(422).json('Please provide an email and password');
-  const users = await database('users').select();
-  const user = users.find(user => user.email === email);
-  if (!user) return res.status(404).json('User not found');
-  if (password !== user.password) return res.status(422).json('Password is incorrect');
-  return res.status(200).json({ name: user.name, id: user.id });
+  for (let requiredParameter of ['email', 'password']) {
+    if (!req.body[requiredParameter]) return res.status(422).json(`Expected format: { email: <String>, password: <String> }. You are missing a ${requiredParameter}`)
+  }
+
+  try {
+    const user = await database('users').select().where('email', email);
+    if (user.length === 0) return res.status(404).json(`User email ${email} not found`);
+    if (password !== user.password) return res.status(422).json(`User password ${password} is incorrect`)
+    return res.status(200).json({ name: user.name, id: user.id })
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
 app.get('/api/v1/users/:id', async (req, res) => {
   const { id } = req.params;
-  const users = await database('users').select();
-  const user = users.find(user => user.id === parseInt(id));
-  if (!user) return res.status(404).json('User not found');
-  return res.status(200).json({ name: user.name, id: user.id });
+  try {
+    const user = await database('users').select().where('id', parseInt(id));
+    if (user.length == 0) return res.status(404).json(`User id ${id} not found`)
+    return res.status(200).json({ name: user.name, id: user.id })
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
 app.post('/api/v1/users/new', async (req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password) return res.status(422).json('Please provide a name, email and password');
-  const users = await database('users').select();
-  const existingUser = users.find(user => user.email === email);
-  if (existingUser) return res.status(422).json('User already exists');
-  const newUser = await database('users').insert({ name, email, password }, 'id')
-  return res.status(201).json({ name, id: newUser[0] });
+  for (let requiredParameter of ['name', 'email', 'password']) {
+    if (!req.body[requiredParameter]) return res.status(422).json(`Expected format: { name: <String>, email: <String>, password: <String> }. You are missing a ${requiredParameter}`)
+  }
+  
+  try {
+    const dupUser = await database('states').select().where('email', email);
+    if (dupUser.length > 0) return res.status(409).json(`Conflict. User with email ${email} already exists`)
+    const newUserId = await database('users').insert({ name, email, password }, 'id')
+    return res.status(201).json({ name, id: newUserId[0] })
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
-app.post('/api/v1/users/favorites/new', async (req, res) => {
+app.post('/api/v1/users/favorites', async (req, res) => {
   const { user_id, station_id } = req.body;
-  if (!user_id || !station_id) return res.status(422).json('Please provide a user id and station id');
-  const newFavorite = await database('favorites').insert({ user_id, station_id }, 'id');
-  return res.status(201).json({id: newFavorite[0]});
+  for (let requiredParameter of ['user_id', 'station_id']) {
+    if (!req.body[requiredParameter]) return res.status(422).json(`Expected format: { user_id: <Integer>, station_id: <Integer> }. You are missing a ${requiredParameter}`);
+  }
+
+  try {
+    const dupFavorite = await database('favorites').select().where({ user_id, station_id });
+    if (dupFavorite.length > 0) return res.status(409).json(`Conflict. User favorite station id ${station_id} already exists`)
+    const newFavoriteId = await database('favorites').insert({ user_id, station_id }, 'id');
+    return res.status(201).json({id: newFavoriteId[0]});
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
+
 });
 
 app.get('/api/v1/users/:id/favorites', async (req, res) => {
-  const favorites = await database('favorites').select();
-  const userFavorites = favorites.filter(favorite => favorite.user_id == req.params.id);
-  return res.status(200).json(userFavorites);
+  const { id } = req.params;
+  try {
+    const user = await database('user').select().where('id', id);
+    if (user.length === 0) return res.status(404).json(`User id ${id} not found`)
+    const favorites = await database('favorites').select().where('user_id', id);
+    return res.status(200).json(favorites)
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
 app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   const { id, station_id } = req.params;
-  const favorites = await database('favorites').select();
-  const favorite = favorites.find(favorite => favorite.user_id === id && favorite.station_id === station_id);
-  if (!favorite) return res.status(404).json('Favorite not found')
-  await database('favorites').where({ id: favorite.id }).del();
-  return res.sendStatus(204);
+  try {
+    const matchingFavorite = database('favorites').select().where({ user_id: id, station_id });
+    if (matchingFavorite.length === 0) return res.status(404).json(`Favorite user id ${id} and station id ${station_id} not found`)
+    await database('favorites').where(id, matchingFavorite.id).del();
+    return res.sendStatus(204);
+  } catch (error) {
+    return res.status(500).json({ error })
+  }
 });
 
 module.exports = app;
