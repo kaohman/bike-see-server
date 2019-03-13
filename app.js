@@ -66,7 +66,7 @@ app.post('/api/v1/users/favorites', async (req, res) => {
   }
 
   try {
-    const dupFavorite = await database('favorites').select().where({ user_id: parseInt(user_id), station_id: parseInt(station_id) });
+    const dupFavorite = await database('favorites').select().where({ user_id: parseInt(user_id), station_id });
     if (dupFavorite.length > 0) return res.status(409).json(`Conflict. User favorite station id ${station_id} already exists`)
     const newFavoriteId = await database('favorites').insert({ user_id, station_id }, 'id');
     return res.status(201).json({id: newFavoriteId[0]});
@@ -91,7 +91,7 @@ app.get('/api/v1/users/:id/favorites', async (req, res) => {
 app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   const { id, station_id } = req.params;
   try {
-    const matchingFavorite = await database('favorites').select().where({ user_id: parseInt(id), station_id: parseInt(station_id) });
+    const matchingFavorite = await database('favorites').select().where({ user_id: parseInt(id), station_id });
     if (matchingFavorite.length === 0) return res.status(404).json(`Favorite user id ${id} and station id ${station_id} not found`)
     await database('favorites').where('id', matchingFavorite[0].id).del();
     return res.sendStatus(204);
