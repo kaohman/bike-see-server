@@ -1,6 +1,6 @@
-import express from 'express';
+var express = require('express');
 const app = express();
-import cors from 'cors';
+var cors = require('cors');
 app.use(cors());
 app.use(express.json());
 const environment = process.env.NODE_ENV || 'development';
@@ -27,7 +27,7 @@ app.get('/api/v1/users/:id', async (req, res) => {
   const users = await database('users').select();
   const user = users.find(user => user.id === parseInt(id));
   if (!user) return res.status(404).json('User not found');
-  return res.status(200).json({name: user.name, id: user.id});
+  return res.status(200).json({ name: user.name, id: user.id });
 });
 
 app.post('/api/v1/users/new', async (req, res) => {
@@ -36,7 +36,7 @@ app.post('/api/v1/users/new', async (req, res) => {
   const users = await database('users').select();
   const existingUser = users.find(user => user.email === email);
   if (existingUser) return res.status(422).json('User already exists');
-  const newUser = await database('users').insert({ name, email, password }, 'id');
+  const newUser = await database('users').insert({ name, email, password }, 'id')
   return res.status(201).json({ name, id: newUser[0] });
 });
 
@@ -62,4 +62,4 @@ app.delete('/api/v1/users/:id/favorites/:station_id', async (req, res) => {
   return res.sendStatus(204);
 });
 
-export default app;
+module.exports = app;
